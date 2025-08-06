@@ -1,0 +1,23 @@
+Personalized-Travel-Planner/
+├── app/
+│   ├── src/
+│   │   └── main/
+│   │       ├── java/com/example/travelplanner/
+│   │       │   ├── data/
+│   │       │   │   ├── Trip.kt
+│   │       │   │   ├── TripDao.kt
+│   │       │   │   └── TripDatabase.kt
+│   │       │   ├── ui/
+│   │       │   │   ├── MainActivity.kt
+│   │       │   │   └── TripAdapter.kt
+│   │       │   └── viewmodel/
+│   │       │       └── TripViewModel.kt
+│   │       └── res/
+│   │           ├── layout/
+│   │           │   ├── activity_main.xml
+│   │           │   └── item_trip.xml
+│   │           └── values/
+│   │               └── strings.xml
+│   └── build.gradle
+├── build.gradle
+└── README.md

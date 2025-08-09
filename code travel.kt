@@ -1,0 +1,145 @@
+void main() {
+  for (var i = 0; i < 10; i++) {
+    print('hello ${i + 1}');
+  }
+}
+package com.example.travelplanner.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "trip_table")
+data class Trip(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val destination: String,
+    val startDate: String,
+    val notes: String
+)
+  package com.example.travelplanner.data
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+
+@Database(entities = [Trip::class], version = 1)
+abstract class TripDatabase : RoomDatabase() {
+    abstract fun tripDao(): TripDao
+
+    companion object {
+        @Volatile private var INSTANCE: TripDatabase? = null
+
+        fun getDatabase(context: Context): TripDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    TripDatabase::class.java,
+                    "trip_database"
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
+package com.example.travelplanner.ui
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.example.travelplanner.data.Trip
+import com.example.travelplanner.databinding.ItemTripBinding
+
+class TripAdapter(private val trips: List<Trip>) :
+    RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
+
+    inner class TripViewHolder(val binding: ItemTripBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
+        val binding = ItemTripBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TripViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
+        val trip = trips[position]
+        holder.binding.apply {
+            textViewDestination.text = trip.destination
+            textViewDate.text = trip.startDate
+            textViewNotes.text = trip.notes
+        }
+    }
+
+    override fun getItemCount() = trips.size
+}
+package com.example.travelplanner.ui
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.example.travelplanner.data.Trip
+import com.example.travelplanner.databinding.ItemTripBinding
+
+class TripAdapter(private val trips: List<Trip>) :
+    RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
+
+    inner class TripViewHolder(val binding: ItemTripBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
+        val binding = ItemTripBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TripViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
+        val trip = trips[position]
+        holder.binding.apply {
+            textViewDestination.text = trip.destination
+            textViewDate.text = trip.startDate
+            textViewNotes.text = trip.notes
+        }
+    }
+
+    override fun getItemCount() = trips.size
+}
+package com.example.travelplanner.ui
+
+import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.travelplanner.data.Trip
+import com.example.travelplanner.databinding.ActivityMainBinding
+import com.example.travelplanner.viewmodel.TripViewModel
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: TripViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val tripAdapter = TripAdapter(listOf())
+        binding.recyclerViewTrips.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewTrips.adapter = tripAdapter
+
+        viewModel.trips.observe(this) { trips ->
+            binding.recyclerViewTrips.adapter = TripAdapter(trips)
+        }
+
+        binding.buttonAddTrip.setOnClickListener {
+            val trip = Trip(
+                destination = binding.editDestination.text.toString(),
+                startDate = binding.editDate.text.toString(),
+                notes = binding.editNotes.text.toString()
+            )
+            viewModel.addTrip(trip)
+        }
+    }
+}
+
+

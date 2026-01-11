@@ -13,7 +13,7 @@ data class Trip(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val destination: String,
     val startDate: String,
-    val notes: String
+    val notes: String,
 )
   package com.example.travelplanner.data
 
